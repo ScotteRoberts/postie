@@ -1,19 +1,31 @@
-import React, { Component } from 'react'
-import '../css/PostDetails.css'
+import React, { Component } from 'react';
+import API from '../API';
+import '../css/PostDetails.css';
 
 export default class PostDetails extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       post: {},
       comments: [],
       postedBy: {},
-    }
+    };
   }
 
+  componentDidMount = async () => {
+    const postResponse = await API.getPost(this.props.match.params.postId);
+    this.setState({ post: postResponse.data });
+
+    const userResponse = await API.getUser(postResponse.data.userId);
+    this.setState({ postedBy: userResponse.data });
+
+    const commentsResponse = await API.getPostComments(this.props.match.params.postId);
+    this.setState({ comments: commentsResponse.data });
+  };
+
   render() {
-    const { post, postedBy, comments } = this.state
+    const { post, postedBy, comments } = this.state;
     return (
       <div className="post-details container">
         <h2>{post.title}</h2>
@@ -32,6 +44,6 @@ export default class PostDetails extends Component {
           </ul>
         </div>
       </div>
-    )
+    );
   }
 }
