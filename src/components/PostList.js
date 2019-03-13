@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import base from '../base';
 import API from '../API';
 import '../css/PostList.css';
 
@@ -10,11 +11,17 @@ export default class PostList extends Component {
     this.state = {
       posts: [],
       page: 1,
+      likes: {},
     };
   }
 
   componentDidMount = () => {
     API.getAllPosts(this.state.page).then(response => this.setState({ posts: response.data }));
+
+    this.ref = base.syncState('likes', {
+      context: this,
+      state: 'likes',
+    });
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -28,7 +35,19 @@ export default class PostList extends Component {
       this.setState(prevState => ({ page: prevState.page + pageValue }));
   };
 
+  handleLike = postId => {
+    this.setState(prevState => {
+      const updatedLikes = {
+        ...prevState.likes,
+        [postId]: prevState.likes[postId] ? prevState.likes[postId] + 1 : 1,
+      };
+
+      return { likes: updatedLikes };
+    });
+  };
+
   render() {
+    const { likes } = this.state;
     return (
       <div className="post-list container">
         <ul className="list">
@@ -38,6 +57,14 @@ export default class PostList extends Component {
               <Link to={`/posts/${post.id}`} className="details">
                 Details
               </Link>
+              <div className="likes">
+                <button type="button" onClick={() => this.handleLike(post.id)}>
+                  <span role="img" aria-label="thumbs up">
+                    👍
+                  </span>
+                </button>
+                <span>{likes[post.id] ? likes[post.id] : 0}</span>
+              </div>
             </li>
           ))}
         </ul>

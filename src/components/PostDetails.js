@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import API from '../API';
 import '../css/PostDetails.css';
 
 export default class PostDetails extends Component {
+  static propTypes = {
+    match: PropTypes.object,
+  };
+
   constructor(props) {
     super(props);
 
@@ -13,15 +18,21 @@ export default class PostDetails extends Component {
     };
   }
 
-  componentDidMount = async () => {
-    const postResponse = await API.getPost(this.props.match.params.postId);
-    this.setState({ post: postResponse.data });
+  componentDidMount = () => {
+    this.getPostWithUser();
+    this.getComments();
+  };
 
-    const userResponse = await API.getUser(postResponse.data.userId);
-    this.setState({ postedBy: userResponse.data });
+  getPostWithUser = async () => {
+    const post = (await API.getPost(this.props.match.params.postId)).data;
+    this.setState({ post });
+    const postedBy = (await API.getUser(post.userId)).data;
+    this.setState({ postedBy });
+  };
 
-    const commentsResponse = await API.getPostComments(this.props.match.params.postId);
-    this.setState({ comments: commentsResponse.data });
+  getComments = async () => {
+    const comments = (await API.getPostComments(this.props.match.params.postId)).data;
+    this.setState({ comments });
   };
 
   render() {
