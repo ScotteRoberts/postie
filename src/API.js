@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from 'axios';
 
-const url = 'https://jsonplaceholder.typicode.com'
+const url = 'https://jsonplaceholder.typicode.com';
 
 export default {
   getAllPosts: (_page = '') =>
@@ -13,4 +13,4 @@ export default {
   getPostComments: postId => axios.get(`${url}/comments?postId=${postId}`),
   getAllUsers: () => axios.get(`${url}/users`),
   getUser: userId => axios.get(`${url}/users/${userId}`),
-}
+};
